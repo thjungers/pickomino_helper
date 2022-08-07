@@ -1,6 +1,6 @@
 """Module to handle a full game."""
 
-from random import randr, randrange
+from random import randrange
 
 from game_round import Round
 
