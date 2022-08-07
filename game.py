@@ -39,7 +39,8 @@ class Game:
         if player_name is None:
             self.current_player_idx = randrange(len(self.players))
         else:
-            self.current_player_idx = self.players.index(player_name)
+            # move back by 1: the next call of self.next_round() will do +=1
+            self.current_player_idx = self.players.index(player_name) - 1
     
     def valid_score(self, score: int) -> bool:
         """Determine if a tile can be picked with the given score, either picked from the free tiles 
@@ -66,6 +67,7 @@ class Game:
     def next_round(self) -> Round:
         """Move to the next player and return the Round object."""
         self.current_player_idx += 1
+        self.current_player_idx %= len(self.players)
         return Round(self)
 
 
