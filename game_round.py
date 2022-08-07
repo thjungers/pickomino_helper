@@ -13,7 +13,7 @@ class Round:
     def __init__(self, game: Game, picked_set: Optional[DiceSet] = None) -> None:
         self.game = game
         self.roll = None
-        self.picked = picked_set
+        self.picked = picked_set or DiceSet()
     
     def pick(self, face: int) -> Round:
         """Pick a set of dice with the given face from the current roll.
@@ -55,7 +55,7 @@ class Round:
             next_roll_count = this_roll_count - (len(next.picked) - len(self.picked))
             if next_roll_count == 0:
                 # end: all dice were picked
-                prob = float(next.picked.is_complete() or this.game.valid_score(next.picked.score()))
+                prob = float(next.picked.is_complete() or self.game.valid_score(next.picked.score()))
                 score = next.score()
                 results[face] = SimResult(prob, score, score, score)
             else:
@@ -76,14 +76,18 @@ class Round:
                 # probability: sum of rolled probabilities, weighted by number of combinationss, 
                 # divided by total number of rolls;
                 # scores: avg, min, max of scores, weighted by number of combinations.
-                results[face] = SimResult(
-                    sum(roll_res.prob * roll_combs for roll_res, roll_combs in roll_sims) / \
-                        (6 ** next_roll_count),
-                    sum(roll_res.avg_score * roll_combs for roll_res, roll_combs in roll_sims) / \
-                        sum(roll_combs for roll_res, roll_combs in roll_sims),
-                    min(roll_res.min_score for roll_res, _ in roll_sims),
-                    max(roll_res.max_score for roll_res, _ in roll_sims)
-                )
+                try:
+                    results[face] = SimResult(
+                        sum(roll_res.prob * roll_combs for roll_res, roll_combs in roll_sims) / \
+                            (6 ** next_roll_count),
+                        sum(roll_res.avg_score * roll_combs for roll_res, roll_combs in roll_sims) / \
+                            sum(roll_combs for roll_res, roll_combs in roll_sims),
+                        min(roll_res.min_score for roll_res, _ in roll_sims),
+                        max(roll_res.max_score for roll_res, _ in roll_sims)
+                    )
+                except ZeroDivisionError:
+                    # no valid roll in roll_sims
+                    continue
         
         return results
 

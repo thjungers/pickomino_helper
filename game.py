@@ -30,6 +30,14 @@ class Game:
         self.players = [Player(self, name) for name in player_names]
         self.free_tiles = list(TILE_SCORES.keys())
         self.current_player_idx = 0
+
+    def player_index(self, player_name: str) -> int:
+        """Get the index of a player in self.players by its name."""
+        for i, player in enumerate(self.players):
+            if player.name == player_name:
+                return i
+        
+        raise ValueError(f"{player_name} is not in list of players.")
     
     def start(self, player_name: Optional[str] = None) -> None:
         """Set the start player and start a new round.
@@ -40,7 +48,7 @@ class Game:
             self.current_player_idx = randrange(len(self.players))
         else:
             # move back by 1: the next call of self.next_round() will do +=1
-            self.current_player_idx = self.players.index(player_name) - 1
+            self.current_player_idx = self.player_index(player_name) - 1
     
     def valid_score(self, score: int) -> bool:
         """Determine if a tile can be picked with the given score, either picked from the free tiles 
