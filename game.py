@@ -81,7 +81,7 @@ class Player:
     def score(self) -> int:
         return sum(TILE_SCORES[tile] for tile in self.tiles)
     
-    def pick_tile(self, tile: int, score: int) -> None
+    def pick_tile(self, tile: int, score: int) -> None:
         """Pick a tile from the free tiles."""
         if tile not in self.game.free_tiles:
             raise TilePickError(f"Tile {tile} is not free.")
