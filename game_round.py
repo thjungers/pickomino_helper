@@ -5,12 +5,13 @@ from __future__ import annotations
 from dataclasses import dataclass
 
 from dice import all_rolls, DiceSet
-
+from game import Game
 
 
 class Round:
     """Class modeling a single game round (roll + pick)."""
-    def __init__(self, picked_set: Optional[DiceSet] = None) -> None:
+    def __init__(self, game: Game, picked_set: Optional[DiceSet] = None) -> None:
+        self.game = game
         self.roll = None
         self.picked = picked_set
     
@@ -28,7 +29,7 @@ class Round:
         
         count = self.roll.compact[face]
         picked = self.picked + [face] * count
-        return Round(picked)
+        return Round(self.game, picked)
     
     def score(self) -> int:
         """Compute the score of the dice picked this round."""
@@ -54,7 +55,7 @@ class Round:
             next_roll_count = this_roll_count - (len(next.picked) - len(self.picked))
             if next_roll_count == 0:
                 # end: all dice were picked
-                prob = float(next.picked.is_complete())
+                prob = float(next.picked.is_complete() or this.game.valid_score(next.picked.score()))
                 score = next.score()
                 results[face] = SimResult(prob, score, score, score)
             else:
