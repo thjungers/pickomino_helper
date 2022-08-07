@@ -42,7 +42,7 @@ class DiceSet:
             new_faces = [new_faces]
 
         faces = sorted(self.faces + new_faces)
-        return Roll(faces)
+        return DiceSet(faces)
     
     def __contains__(self, face: int) -> bool:
         """Implement the `in` operator."""
